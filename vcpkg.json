@@ -1,0 +1,9 @@
+{
+  "name" : "3d-graphics",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "42301df395852935d105799de93abf5481f34f1a",
+  "dependencies" : [ {
+    "name" : "sdl2",
+    "version>=" : "2.28.4#1"
+  } ]
+}
