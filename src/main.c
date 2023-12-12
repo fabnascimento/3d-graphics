@@ -58,6 +58,17 @@ bool initialize_window(void) {
     return true;
 }
 
+void draw_grid(int multiple) {
+    for(int y = 0; y < window_height; y++) {
+        for (int x = 0; x < window_width; x++) {
+            int pixel_index = (window_width * y) + x;
+            if (x % multiple == 0 || y % multiple == 0) {
+                color_buffer[pixel_index] = 0xFF555555;
+            }
+        }
+    }
+}
+
 void setup(void) {
     color_buffer = (uint32_t*) malloc(
         sizeof(uint32_t) * window_width * window_height
@@ -119,7 +130,8 @@ void render() {
     // 0xFFFF0000
     //   A R G B
     // ...
-    clear_color_buffer(0xFFFFFF00);
+    clear_color_buffer(0xFF000000);
+    draw_grid(10);
     render_color_buffer();
 
     SDL_RenderPresent(renderer);
