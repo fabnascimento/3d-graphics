@@ -5,7 +5,9 @@ set(CMAKE_C_STANDARD 11)
 
 find_package(SDL2 CONFIG REQUIRED)
 
-add_executable(3d_graphics src/main.c)
+add_executable(3d_graphics src/main.c
+        src/display.c
+        src/display.h)
 
 target_link_libraries(3d_graphics
         PRIVATE
