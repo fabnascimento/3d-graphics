@@ -74,7 +74,7 @@ void draw_rect(int x, int y, int width, int height, uint32_t color) {
 
     for(int pixel_y = y; pixel_y < y+height; pixel_y++) {
         for (int pixel_x = x; pixel_x < x+width; pixel_x++) {
-            color_buffer[(pixel_y * window_width) + pixel_x] = color;
+            draw_pixel(pixel_x, pixel_y, color);
         }
     }
 }
@@ -95,4 +95,10 @@ void destroy_window() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void draw_pixel(int x, int y, uint32_t color) {
+    if (x < window_width && y < window_height) {
+        color_buffer[(window_width * y) + x] = color;
+    }
 }

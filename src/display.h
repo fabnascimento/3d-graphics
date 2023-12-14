@@ -18,5 +18,6 @@ void draw_rect(int x, int y, int width, int height, uint32_t color);
 void clear_color_buffer(uint32_t color);
 void render_color_buffer();
 void destroy_window();
+void draw_pixel(int x, int y, uint32_t color);
 
 #endif //DISPLAY_H
