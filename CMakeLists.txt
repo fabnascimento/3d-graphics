@@ -7,7 +7,9 @@ find_package(SDL2 CONFIG REQUIRED)
 
 add_executable(3d_graphics src/main.c
         src/display.c
-        src/display.h)
+        src/display.h
+        src/vector.c
+        src/vector.h)
 
 target_link_libraries(3d_graphics
         PRIVATE
