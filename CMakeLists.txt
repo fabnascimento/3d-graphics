@@ -9,7 +9,11 @@ add_executable(3d_graphics src/main.c
         src/display.c
         src/display.h
         src/vector.c
-        src/vector.h)
+        src/vector.h
+        src/mesh.c
+        src/mesh.h
+        src/triangle.c
+        src/triangle.h)
 
 target_link_libraries(3d_graphics
         PRIVATE

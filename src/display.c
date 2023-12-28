@@ -62,7 +62,7 @@ void draw_grid(int multiple) {
         for (int x = 0; x < window_width; x++) {
             int pixel_index = (window_width * y) + x;
             if (x % multiple == 0 || y % multiple == 0) {
-                color_buffer[pixel_index] = 0xFF555555;
+                color_buffer[pixel_index] = 0xFF222222;
             }
         }
     }

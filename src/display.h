@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define FPS 30
+// how many millisecs we need per second to achieve 30 FPS
+#define FRAME_TARGET_TIME (1000/FPS)
+
 extern int window_width;
 extern int window_height;
 
