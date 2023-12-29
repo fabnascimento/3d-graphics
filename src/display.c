@@ -102,3 +102,23 @@ void draw_pixel(int x, int y, uint32_t color) {
         color_buffer[(window_width * y) + x] = color;
     }
 }
+
+// DDA Line Drawing Algorithm
+void draw_line(int x0, int y0, int x1, int y1, uint32_t color) {
+    int delta_x = (x1 - x0);
+    int delta_y = (y1 - y0);
+
+    int line_length = max(abs(delta_x), abs(delta_y));
+
+    float x_increment = delta_x / (float)line_length;
+    float y_increment = delta_y / (float)line_length;
+
+    float current_x = x0;
+    float current_y = y0;
+
+    for (int i = 0; i <= line_length; i++) {
+        draw_pixel(round(current_x), round(current_y), color);
+        current_x += x_increment;
+        current_y += y_increment;
+    }
+}

@@ -112,10 +112,10 @@ void update() {
 }
 
 void render() {
-    // colorbuffer - an array of colors
+    // colorbuffer - an array of colors e.g. 0xFFFF0000
     // 0x = hex number
-    // 0xFFFF0000
-    //   A R G B
+    // 0xFF|FF|00|00
+    //   A  R  G  B
     // ...
     clear_color_buffer(0xFF000000);
 
@@ -131,6 +131,31 @@ void render() {
                       0xFFFF5050
             );
         }
+
+        // draw line
+        draw_line(
+            current_triangle.points[0].x,
+            current_triangle.points[0].y,
+            current_triangle.points[1].x,
+            current_triangle.points[1].y,
+            0xFFFF5050
+        );
+
+        draw_line(
+            current_triangle.points[1].x,
+            current_triangle.points[1].y,
+            current_triangle.points[2].x,
+            current_triangle.points[2].y,
+            0xFFFF5050
+        );
+
+        draw_line(
+            current_triangle.points[2].x,
+            current_triangle.points[2].y,
+            current_triangle.points[0].x,
+            current_triangle.points[0].y,
+            0xFFFF5050
+        );
     }
 
     render_color_buffer();

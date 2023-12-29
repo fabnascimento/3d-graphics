@@ -23,5 +23,6 @@ void clear_color_buffer(uint32_t color);
 void render_color_buffer();
 void destroy_window();
 void draw_pixel(int x, int y, uint32_t color);
+void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
 
 #endif //DISPLAY_H
