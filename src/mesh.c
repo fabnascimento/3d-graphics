@@ -4,7 +4,15 @@
 
 #include "mesh.h"
 
-vec3_t mesh_vertices[MESH_VERTICES_AMOUNT] = {
+#include "dynamic_array.h"
+
+mesh_t mesh = {
+    .vertices = NULL,
+    .faces = NULL,
+    .rotation = {0, 0, 0}
+};
+
+vec3_t cube_vertices[CUBE_VERTICES_AMOUNT] = {
     {-1, -1, -1}, // 1
     {-1, 1, -1}, // 2
     {1, 1, -1}, // 3
@@ -16,7 +24,7 @@ vec3_t mesh_vertices[MESH_VERTICES_AMOUNT] = {
 };
 
 // index starting at 1, might be related to OBJ
-face_t mesh_faces[MESH_FACE_AMOUNT] = {
+face_t cube_faces[CUBE_FACES_AMOUNT] = {
     // front
     {1, 2, 3},
     {1, 3, 4},
@@ -36,3 +44,18 @@ face_t mesh_faces[MESH_FACE_AMOUNT] = {
     {6, 8, 1},
     {6, 1, 4}
 };
+
+void load_cube_mesh_data() {
+    ARRAY_INIT(vec3_t, mesh.vertices);
+    ARRAY_INIT(face_t, mesh.faces);
+
+    for (int i = 0; i < CUBE_VERTICES_AMOUNT; i++) {
+        const vec3_t cube_vertex = cube_vertices[i];
+        ARRAY_PUSH(mesh.vertices, cube_vertex);
+    }
+
+    for (int i = 0; i < CUBE_FACES_AMOUNT; i++) {
+        const face_t cube_face = cube_faces[i];
+        ARRAY_PUSH(mesh.faces, cube_face);
+    }
+}

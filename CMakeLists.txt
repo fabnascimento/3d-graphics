@@ -13,7 +13,8 @@ add_executable(3d_graphics src/main.c
         src/mesh.c
         src/mesh.h
         src/triangle.c
-        src/triangle.h)
+        src/triangle.h
+        src/dynamic_array.h)
 
 target_link_libraries(3d_graphics
         PRIVATE
