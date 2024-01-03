@@ -6,6 +6,16 @@
 
 #include <math.h>
 
+// VEC2 functions
+
+float vec2_length(vec2_t vector) {
+    return sqrt(vector.x * vector.x + vector.y * vector.y);
+}
+
+// VEC3 functions
+float vec3_length(vec3_t vector) {
+    return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+}
 
 vec3_t vec3_rotate_x(vec3_t original, float angle) {
     const vec3_t rotated_vector = {
