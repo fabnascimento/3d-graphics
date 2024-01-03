@@ -8,6 +8,7 @@
 
 #include "vector.h"
 #include "triangle.h"
+#include <stdbool.h>
 
 #define CUBE_VERTICES_AMOUNT 8
 extern vec3_t cube_vertices[CUBE_VERTICES_AMOUNT];
@@ -23,5 +24,6 @@ typedef struct {
 extern mesh_t mesh;
 
 void load_cube_mesh_data();
+bool load_obj_file(const char* file_path);
 
 #endif //MESH_H

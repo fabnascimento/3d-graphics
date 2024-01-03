@@ -4,7 +4,15 @@
 
 #include "mesh.h"
 
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "dynamic_array.h"
+
+char *VERTEX_FORMAT = "%*s %f %f %f";
+char *FACES_FORMAT_VERTEXONLY = "%*s %d/%*d/%*d %d/%*d/%*d %d/%*d/%*d";
+char *FACES_FORMAT_FULL = "%*s %d/%d/%d %d/%d/%d %d/%d/%d";
 
 mesh_t mesh = {
     .vertices = NULL,
@@ -58,4 +66,56 @@ void load_cube_mesh_data() {
         const face_t cube_face = cube_faces[i];
         ARRAY_PUSH(mesh.faces, cube_face);
     }
+}
+
+bool load_obj_file(const char* file_name) {
+
+    FILE *file = NULL; // file handle -> reference to the file
+    fopen_s(&file, file_name, "r"); // open the file in a mode, in this case read mode
+
+    if (file == NULL) {
+        printf("File %s could not be loaded", file_name);
+        return false;
+    }
+
+    ARRAY_INIT(vec3_t, mesh.vertices);
+    ARRAY_INIT(face_t, mesh.faces);
+
+    char line[1024];
+
+    while(fgets(line, 1024, file)) {
+        // Vertex info
+        if (strncmp(line, "v ", 2) == 0) {
+            vec3_t loaded_vertex;
+            sscanf_s(line, VERTEX_FORMAT, &loaded_vertex.x, &loaded_vertex.y, &loaded_vertex.z);
+            ARRAY_PUSH(mesh.vertices, loaded_vertex);
+        }
+
+        // Face info
+        if (strncmp(line, "f ", 2) == 0) {
+            int vertex_indices[3];
+            int texture_indices[3];
+            int normal_indices[3];
+
+            sscanf_s(
+                line, FACES_FORMAT_FULL,
+                &vertex_indices[0], &texture_indices[0], &normal_indices[0],
+                &vertex_indices[1], &texture_indices[1], &normal_indices[1],
+                &vertex_indices[2], &texture_indices[2], &normal_indices[2]
+            );
+
+            face_t loaded_face = {
+                .a = vertex_indices[0],
+                .b = vertex_indices[1],
+                .c = vertex_indices[2]
+            };
+
+            ARRAY_PUSH(mesh.faces, loaded_face);
+        }
+
+    }
+
+    fclose(file);
+
+    return true;
 }

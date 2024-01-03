@@ -39,8 +39,12 @@ void setup(void) {
 
     ARRAY_INIT(triangle_t, triangles_to_render);
 
-    // loads a cube into the global mesh data structure
-    load_cube_mesh_data();
+    // loads a hard-coded cube into the global mesh data structure
+    // load_cube_mesh_data();
+    const bool loaded_successfully = load_obj_file("../assets/suzanne_triangulated.obj");
+    if (!loaded_successfully) {
+        printf("Failed to load example\n");
+    }
 
 }
 
@@ -80,8 +84,6 @@ void update(void) {
     triangles_to_render = NULL;
     ARRAY_INIT(triangle_t, triangles_to_render);
 
-    mesh.rotation.y += 0.01;
-    mesh.rotation.z += 0.01;
     mesh.rotation.x += 0.01;
 
     // loop the faces first?
@@ -116,7 +118,6 @@ void update(void) {
         }
 
         ARRAY_PUSH(triangles_to_render, projected_triangle);
-        // triangles_to_render[i] = projected_triangle;
     }
 
 }
@@ -175,11 +176,12 @@ void render() {
 }
 
 void free_resources(void) {
+    printf("Destroy resources was called\n");
     ARRAY_DESTROY(mesh.faces);
     ARRAY_DESTROY(mesh.vertices);
-
-    free(color_buffer);
+    ARRAY_DESTROY(triangles_to_render);
     free(triangles_to_render);
+    free(color_buffer);
 }
 
 int main(int argc, char *argv[]) {
