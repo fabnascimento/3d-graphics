@@ -9,7 +9,7 @@
 
 triangle_t* triangles_to_render = NULL;
 
-vec3_t camera_position = { .x=0, .y=0, .z= -5 };
+vec3_t camera_position = { 0, 0, 0 };
 
 float fov_factor = 1024;
 
@@ -98,6 +98,9 @@ void update(void) {
 
         triangle_t projected_triangle;
 
+        vec3_t transformed_vertices[3];
+
+        // transforms the points
         for (int j = 0; j < 3; j++) {
             vec3_t current_vertex = face_vertices[j];
 
@@ -106,9 +109,35 @@ void update(void) {
             current_vertex = vec3_rotate_z(current_vertex, mesh.rotation.z);
 
             // move points away from the camera
-            current_vertex.z -= camera_position.z;
+            current_vertex.z += 5; // ?? maybe it will be changed in the future
 
-            vec2_t projected_point = project(current_vertex);
+            // store the transformed vertex
+            transformed_vertices[j] = current_vertex;
+        }
+
+        // starts perform back-face culling algorithm
+        vec3_t *vector_a = &transformed_vertices[0]; /**/
+        vec3_t *vector_b = &transformed_vertices[1]; /**/
+        vec3_t *vector_c = &transformed_vertices[2]; /**/
+
+        vec3_t vector_ba = vec3_subtract(vector_b, vector_a);
+        vec3_t vector_ca = vec3_subtract(vector_c, vector_a);
+
+        // remembering the cross product is non-comutative
+        // and our engine is using left-handed coordinate system
+        vec3_t normal = vec3_cross(&vector_ba, &vector_ca);
+
+        // find the vector between a point in the triangle and the camera origin
+        vec3_t camera_ray = vec3_subtract(&camera_position, vector_a);
+
+        // calculate how aligned the camera ray is with the face normal
+        // 0 or negative means the face will be hidden
+        float aligned_factor = vec3_dot(normal, camera_ray);
+
+        if (aligned_factor < 0) { continue; }
+
+        for (int j = 0; j < 3; j++) {
+            vec2_t projected_point = project(transformed_vertices[j]);
 
             // scale and translate to center
             projected_point.x += (window_width / 2);
@@ -132,7 +161,7 @@ void render() {
 
     draw_grid(10);
 
-    const int face_amount = ARRAY_SIZE(mesh.faces);
+    const int face_amount = ARRAY_SIZE(triangles_to_render);
     for(int i = 0; i < face_amount; i++) {
         const triangle_t current_triangle = triangles_to_render[i];
         for (int point = 0; point < 3; point++) {
