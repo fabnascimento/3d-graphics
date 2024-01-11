@@ -11,7 +11,16 @@ triangle_t* triangles_to_render = NULL;
 
 vec3_t camera_position = { 0, 0, 0 };
 
-float fov_factor = 1024;
+float fov_factor = 512;
+
+uint32_t color_array[12] = {
+    0xFF485696,
+    0xFFE7E7E7,
+    0xFFF9C784,
+    0xFFFC7A1E,
+    0xFFF24C00,
+    0xFF00FF00
+};
 
 bool is_running = false;
 Uint32 previous_frame_time = 0;
@@ -73,8 +82,10 @@ vec2_t project (vec3_t point) {
 }
 
 void update(void) {
+    // Wait some time until the reach the target frame time in milliseconds
     int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
 
+    // Only delay execution if we are running too fast
     if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
         SDL_Delay(time_to_wait);
     }
@@ -84,62 +95,70 @@ void update(void) {
     triangles_to_render = NULL;
     ARRAY_INIT(triangle_t, triangles_to_render);
 
-    mesh.rotation.x += 0.01;
+    mesh.rotation.x += 0.02;
+    mesh.rotation.y += 0.01;
 
     // loop the faces first?
     const int mesh_amount = ARRAY_SIZE(mesh.faces);
     for (int i = 0; i < mesh_amount; i++) {
-        face_t current_face = mesh.faces[i];
+        face_t mesh_face = mesh.faces[i];
 
         vec3_t face_vertices[3];
-        face_vertices[0] = mesh.vertices[current_face.a - 1];
-        face_vertices[1] = mesh.vertices[current_face.b - 1];
-        face_vertices[2] = mesh.vertices[current_face.c - 1];
-
-        triangle_t projected_triangle;
+        face_vertices[0] = mesh.vertices[mesh_face.a - 1];
+        face_vertices[1] = mesh.vertices[mesh_face.b - 1];
+        face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
         vec3_t transformed_vertices[3];
 
-        // transforms the points
+        // Loop all three vertices of this current face and apply transformations
         for (int j = 0; j < 3; j++) {
-            vec3_t current_vertex = face_vertices[j];
+            vec3_t transformed_vertex = face_vertices[j];
 
-            current_vertex = vec3_rotate_x(current_vertex, mesh.rotation.x);
-            current_vertex = vec3_rotate_y(current_vertex, mesh.rotation.y);
-            current_vertex = vec3_rotate_z(current_vertex, mesh.rotation.z);
+            transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotation.x);
+            transformed_vertex = vec3_rotate_y(transformed_vertex, mesh.rotation.y);
+            transformed_vertex = vec3_rotate_z(transformed_vertex, mesh.rotation.z);
 
-            // move points away from the camera
-            current_vertex.z += 5; // ?? maybe it will be changed in the future
+            // Translate the vertex away from the camera
+            transformed_vertex.z += 5;
 
-            // store the transformed vertex
-            transformed_vertices[j] = current_vertex;
+            // Save transformed vertex in the array of transformed vertices
+            transformed_vertices[j] = transformed_vertex;
         }
 
-        // starts perform back-face culling algorithm
-        vec3_t *vector_a = &transformed_vertices[0]; /**/
-        vec3_t *vector_b = &transformed_vertices[1]; /**/
-        vec3_t *vector_c = &transformed_vertices[2]; /**/
+        // Check backface culling
+        vec3_t *vector_a = &transformed_vertices[0]; /*   A   */
+        vec3_t *vector_b = &transformed_vertices[1]; /*  / \  */
+        vec3_t *vector_c = &transformed_vertices[2]; /* C---B */
 
-        vec3_t vector_ba = vec3_subtract(vector_b, vector_a);
-        vec3_t vector_ca = vec3_subtract(vector_c, vector_a);
+        // Get the vector subtraction of B-A and C-A
+        vec3_t vector_ab = vec3_subtract(vector_b, vector_a);
+        vec3_t vector_ac = vec3_subtract(vector_c, vector_a);
+        vec3_normalize(&vector_ab);
+        vec3_normalize(&vector_ac);
 
-        // remembering the cross product is non-comutative
-        // and our engine is using left-handed coordinate system
-        vec3_t normal = vec3_cross(&vector_ba, &vector_ca);
+        // Compute the face normal (using cross product to find perpendicular)
+        vec3_t normal = vec3_cross(&vector_ab, &vector_ac);
+        vec3_normalize(&normal);
 
-        // find the vector between a point in the triangle and the camera origin
+        // Find the vector between vertex A in the triangle and the camera origin
         vec3_t camera_ray = vec3_subtract(&camera_position, vector_a);
 
-        // calculate how aligned the camera ray is with the face normal
-        // 0 or negative means the face will be hidden
-        float aligned_factor = vec3_dot(normal, camera_ray);
+        // Calculate how aligned the camera ray is with the face normal (using dot product)
+        float dot_normal_camera = vec3_dot(normal, camera_ray);
 
-        if (aligned_factor < 0) { continue; }
+        // Bypass the triangles that are looking away from the camera
+        if (dot_normal_camera < 0) {
+            continue;
+        }
 
+        triangle_t projected_triangle;
+
+        // Loop all three vertices to perform projection
         for (int j = 0; j < 3; j++) {
+            // Project the current vertex
             vec2_t projected_point = project(transformed_vertices[j]);
 
-            // scale and translate to center
+            // Scale and translate the projected points to the middle of the screen
             projected_point.x += (window_width / 2);
             projected_point.y += (window_height / 2);
 
@@ -161,41 +180,28 @@ void render() {
 
     draw_grid(10);
 
+    // this is an example of a difficult triangle to render if I just loop
+    // the x value horizontally
+    // draw_filled_triangle(1074, 403, 874, 375, 1138, 599, 0xFF00FF00);
+    // draw_rect(1074, 403, 5, 5, 0xFF00FF00);
+    // draw_rect(874, 375, 5, 5, 0xFF00FF00);
+    // draw_rect(1138, 599, 5, 5, 0xFF00FF00);
+    // draw_rect(907, 403, 5, 5, 0xFFFFFF00);
+    // draw_triangle(1138, 599, 1074, 403, 907, 403, color_array[0]);
+    // draw_triangle(874, 375, 1074, 403, 907, 403, color_array[3]);
+
+    // draw_filled_triangle(874, 375, 1074, 403, 907, 403, 0xFFFFFF00);
+
+
     const int face_amount = ARRAY_SIZE(triangles_to_render);
     for(int i = 0; i < face_amount; i++) {
         const triangle_t current_triangle = triangles_to_render[i];
-        for (int point = 0; point < 3; point++) {
-            draw_rect(current_triangle.points[point].x,
-                      current_triangle.points[point].y,
-                      4,
-                      4,
-                      0xFFFF5050
-            );
-        }
 
-        // draw line
-        draw_line(
-            current_triangle.points[0].x,
-            current_triangle.points[0].y,
-            current_triangle.points[1].x,
-            current_triangle.points[1].y,
-            0xFFFF5050
-        );
-
-        draw_line(
-            current_triangle.points[1].x,
-            current_triangle.points[1].y,
-            current_triangle.points[2].x,
-            current_triangle.points[2].y,
-            0xFFFF5050
-        );
-
-        draw_line(
-            current_triangle.points[2].x,
-            current_triangle.points[2].y,
-            current_triangle.points[0].x,
-            current_triangle.points[0].y,
-            0xFFFF5050
+        draw_filled_triangle(
+            current_triangle.points[0].x, current_triangle.points[0].y,
+            current_triangle.points[1].x, current_triangle.points[1].y,
+            current_triangle.points[2].x, current_triangle.points[2].y,
+            0xFFFF5733
         );
     }
 

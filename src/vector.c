@@ -12,6 +12,13 @@ float vec2_length(const vec2_t* vector) {
     return sqrt(vector->x * vector->x + vector->y * vector->y);
 }
 
+void vec2_normalize(vec2_t* v) {
+    const float length = vec2_length(v);
+
+    v->x = v->x / length;
+    v->y = v->y / length;
+}
+
 vec2_t vec2_add(const vec2_t* vec1, const vec2_t* vec2) {
     vec2_t result = {
         .x = vec1->x + vec2->x,
@@ -54,6 +61,14 @@ float vec2_dot(const vec2_t* a, const vec2_t* b) {
 // VEC3 functions
 float vec3_length(const vec3_t* vector) {
     return sqrt(vector->x * vector->x + vector->y * vector->y + vector->z * vector->z);
+}
+
+void vec3_normalize(vec3_t* v) {
+    const float length = vec3_length(v);
+
+    v->x = v->x/length;
+    v->y = v->y/length;
+    v->z = v->z/length;
 }
 
 vec3_t vec3_add(const vec3_t* a, const vec3_t* b) {

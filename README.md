@@ -22,3 +22,13 @@ The result of a dot product is a float value
 3. Find the camera ray vector by `subtracting` the `camera position` from point `A`
 4. Take the `dot product` between the normal `N` and the `camera ray`
 5. If this dot product is less than `zero`, then we `do not` display the face
+
+
+## Triangle Rasterization
+
+I am following the course choice of using the technique called flat-bottom and flat-top.
+This technique divides the triangle into two triangles, one being the flat-bottom one, and the other being the flat-top
+
+to perform this division we need to find the midpoint of the original triangle
+
+$M_y = y1$ y1 -> being the point in the middle of the triangle
