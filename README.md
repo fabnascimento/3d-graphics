@@ -72,3 +72,13 @@ void fill_flat_bottom_triangle(int x0, int y0, int x1, int y1, int x2, int y2, u
 
  draw_filled_triangle(874, 375, 1074, 403, 907, 403, 0xFFFFFF00);
 ```
+
+## Proposed challenge 
+
+At the course they proposed a challenge of Selecting Different Rendering Modes by the keyboard
+
+I plan to make use of the `command` design pattern as I was learning about it on the book
+`Game Programming Patterns` by `Robert Nystrom`.
+
+
+

@@ -180,19 +180,6 @@ void render() {
 
     draw_grid(10);
 
-    // this is an example of a difficult triangle to render if I just loop
-    // the x value horizontally
-    // draw_filled_triangle(1074, 403, 874, 375, 1138, 599, 0xFF00FF00);
-    // draw_rect(1074, 403, 5, 5, 0xFF00FF00);
-    // draw_rect(874, 375, 5, 5, 0xFF00FF00);
-    // draw_rect(1138, 599, 5, 5, 0xFF00FF00);
-    // draw_rect(907, 403, 5, 5, 0xFFFFFF00);
-    // draw_triangle(1138, 599, 1074, 403, 907, 403, color_array[0]);
-    // draw_triangle(874, 375, 1074, 403, 907, 403, color_array[3]);
-
-    // draw_filled_triangle(874, 375, 1074, 403, 907, 403, 0xFFFFFF00);
-
-
     const int face_amount = ARRAY_SIZE(triangles_to_render);
     for(int i = 0; i < face_amount; i++) {
         const triangle_t current_triangle = triangles_to_render[i];
